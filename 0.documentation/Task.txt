@@ -1,0 +1,6 @@
+
+- Use Ajax MySQL to implement 
+      - admin inquiry of client's payment status
+      - update of payments
+- Complete Print (receipt, report - include dates )
+- Complete Paystack - split payment)

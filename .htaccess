@@ -1,0 +1,4 @@
+
+
+# Directives for custom error pages
+ErrorDocument 404 /globalerror/404.php
