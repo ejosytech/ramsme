@@ -77,7 +77,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         $occupancy_err = "Please select the occupancy that applies";
     } elseif(!filter_var(trim($_POST["occupancy"]), FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/"))))
     {
-        $occupancy_err = "Occupancy should either be Landload, Tenant or Tenant [Special]";
+        $occupancy_err = "Occupancy should either be Landlord, Tenant or Tenant [Special]";
     } else{
         $occupancy = trim($_POST["occupancy"]);
          }
@@ -228,9 +228,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Redirect to login page
-                 header("location: valid.php?successmsg=success_reg");
+                 //header("location: valid.php?successmsg=success_reg");
                 //header("location: login.php");
-                exit();
+                 
+                 // INITIALIZE pay_sec_update for if Landloard 
+                 
+                 initialize_pay_sec_update_sec($link,$occupancy,$mobile_no,$name_value);
+                 initialize_pay_sec_update_infr($link,$occupancy,$mobile_no,$name_value);
+                
+                 exit();
             } 
             else
             {
@@ -241,10 +247,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                     // Close statement
             mysqli_stmt_close($stmt);
         }
-    
-   
-    // Close connection
-    mysqli_close($link);
+        
+       
     
     } 
             catch (Exception $ex) 
@@ -253,10 +257,94 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                 exit();
             }
 
+   
+   
+        
+        // Close connection
+    mysqli_close($link);
 } 
 
+function initialize_pay_sec_update_sec($linkx,$occupancyx,$mobile_nox,$name_valuex)
+{
+           $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+         
+        if($stmtx = mysqli_prepare($linkx, $sql))
+        {
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmtx, "sssssss", $param_mobile_no, $param_date,$param_name, $param_amount, $param_service, $param_attachment,$param_remark );
+       
+            // Set parameters
+            $param_mobile_no = $mobile_nox;
+            $param_name = $name_valuex;
+            $param_date = "";
+            $param_amount = 0;
+            $param_service = "security";
+            $param_attachment = "";
+           $param_remark = "initiation";
+            //
+      
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmtx))
+            {
+               //header("location: valid.php?successmsg=success_reg");
+               
+                } 
+            else
+            {
+                // URL doesn't contain valid id. Redirect to error page
+                    header("location: error.php?errortype=insert_sql_err1");
+                    //echo "Oops! Something went wrong. Please try again later.";
+                    exit();
+               
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmtx);
+            }
+        }          
 
 
+function initialize_pay_sec_update_infr($linkx,$occupancyx,$mobile_nox,$name_valuex)
+{
+           if ($occupancyx == "landlord")
+        {
+            $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+         
+        if($stmtx = mysqli_prepare($linkx, $sql))
+        {
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmtx, "sssssss", $param_mobile_no, $param_date,$param_name, $param_amount, $param_service, $param_attachment,$param_remark );
+       
+            // Set parameters
+            $param_mobile_no = $mobile_nox;
+            $param_name = $name_valuex;
+            $param_date = "";
+            $param_amount = 0;
+            $param_service = "infrastructure";
+            $param_attachment = "";
+           $param_remark = "initiation";
+            //
+      
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmtx))
+            {
+               header("location: valid.php?successmsg=success_reg");
+               
+                } 
+            else
+            {
+                // URL doesn't contain valid id. Redirect to error page
+                    header("location: error.php?errortype=insert_sql_err1");
+                    //echo "Oops! Something went wrong. Please try again later.";
+                    exit();
+               
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmtx);
+            }
+        }          
+}
 
 // Function defnition
 function function_alert($message) {
@@ -279,9 +367,9 @@ function compress_image($tempPath, $originalPath, $imageQuality)
             break; 
         case 'image/png': 
             $image = imagecreatefrompng($tempPath); 
-            break; 
         case 'image/gif': 
             $image = imagecreatefromgif($tempPath); 
+            break; 
             break; 
         default: 
             $image = imagecreatefromjpeg($tempPath); 
@@ -343,10 +431,10 @@ include '../mainHF/header_reg.php';
             <div class="mb-3 row">  
                   <label for="occupancy" class="form-label"><b>Occupancy</b></label>            
                  <select name="occupancy" id ="occupancy" class="form-select"  required>
-                    <option selected ="landlord">Landlord</option>
-                    <option value="landlord">Landlord</option>
-                    <option value="tenant">Tenant</option>
-                    <option value="tenant-special">Special Tenant</option>
+                    <option selected ="landlord">landlord</option>
+                    <option value="landlord">landlord</option>
+                    <option value="tenant">tenant</option>
+                    <option value="tenant-special">special-tenant</option>
                 </select>
                    <div class="valid-feedback">Valid.</div>
                    <div class="invalid-feedback">Please Enter your occupancy status e.g Landlord/Tenant.</div>

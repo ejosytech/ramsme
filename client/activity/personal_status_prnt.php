@@ -26,8 +26,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
 
 // EXTRACT PREVIOUS PAYMENTS DETAILS BEFORE 2021
 
-  // $sql = "SELECT * FROM users WHERE mobile_no = ?";
-$sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outstanding,infr_outst_dec21 infr_outstanding,infr_contr_dec21 infr_prev_pay from users where occupancy = 'landlord' and mobile_no = ?";
+   // $sql = "SELECT * FROM users WHERE mobile_no = ?";
+$sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outstanding, infr_outst_dec21 infr_outstanding,infr_contr_dec21 infr_prev_pay from users where occupancy = 'landlord' and mobile_no = ?";
 
              
       if($stmt = mysqli_prepare($link, $sql))
@@ -50,18 +50,12 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
                 // Retrieve individual field value
                   
                     $location = $row["location"];         
-                    //$sec_prev_pay = number_format($row["sec_prev_pay"],0);
-                    $sec_prev_pay_temp = $row["sec_prev_pay"];
-                    $sec_outst_temp = $row["sec_outstanding"];
-                    $infr_prev_pay_temp = $row["infr_prev_pay"];
-                    $infr_outst_temp = ($infr_fixed_amount - $row["infr_prev_pay"]);// What was paid so far is deducted from fix amount for infracstructure
-                    // Formating 
-                    $sec_prev_pay =  number_format($sec_prev_pay_temp,2);
-                    $sec_outst = number_format($sec_outst_temp,2);
-                    $infr_prev_pay = number_format($infr_prev_pay_temp,2);
-                    $infr_outst = number_format($infr_outst_temp,2);
+                    $sec_prev_pay = $row["sec_prev_pay"];
+                    $sec_outst = $row["sec_outstanding"];
+                    $infr_prev_pay = $row["infr_prev_pay"];
+                    //
                     
-                   
+                    
                                         
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
@@ -76,7 +70,7 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
         }
         
         // Close statement
-        mysqli_stmt_close($stmt);
+        //mysqli_stmt_close($stmt);
 
 // Display Previous Record Content
  // Prepare a select statement
@@ -85,16 +79,17 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
    // $sql = "SELECT * FROM users WHERE mobile_no = ?";
 $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' and users.mobile_no = ?";
 
+$sec_stmt = mysqli_prepare($link, $sec_sql);
              
-      if($sec_stmt = mysqli_prepare($link, $sec_sql))
+      if($sec_stmt)
       {
-              // Bind variables to the prepared statement as parameters
+        // Bind variables to the prepared statement as parameters
         mysqli_stmt_bind_param($sec_stmt, "s", $param_mobile_no);
         
         // Set parameters
         $param_mobile_no = trim($_SESSION["mobile_no"]);
         //$role = trim($_SESSION["role"]);
-        
+ 
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($sec_stmt)){
             $sec_result = mysqli_stmt_get_result($sec_stmt);
@@ -104,17 +99,12 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
                 contains only one row, we don't need to use while loop */
                 $sec_row = mysqli_fetch_array($sec_result, MYSQLI_ASSOC);
                 // Retrieve individual field value
-                  
+        
+                    //
+                    $sec_due = number_format($sec_row["sec_due"] + $sec_prev_pay + $sec_outst, 0);
+                    $sec_paid = number_format($sec_row["sec_paid"] + $sec_prev_pay,0);
+                    $sec_diff = number_format(($sec_row["sec_paid"] + $sec_prev_pay)-($sec_row["sec_due"] + $sec_prev_pay + $sec_outst),0);
                               
-                    
-                    $mobile_no = $sec_row["sec_mobile"];
-                    $name_value = $sec_row["sec_name"];
-                    $sec_due = number_format($sec_row["sec_due"],2);
-                    $sec_paid = number_format($sec_row["sec_paid"],2);
-                    $sec_diff = number_format($sec_row["sec_difference"],2);
-                    
-                                       
-                                        
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
                     header("location: error.php");
@@ -124,16 +114,20 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
             } else{
                 //echo "Oops! Something went wrong. Please try again later.";
                 header("location: error.php");
+                exit();
             }
         }
         
         // Close statement
-        mysqli_stmt_close($sec_stmt);
+      //  mysqli_stmt_close($sec_stmt);
+        
         
         
        // $infr_sql = "select DISTINCT users.name_value infr_name, users.mobile_no infr_mobile, amount_due(users.occupancy, users.no_rooms, users.effective_date) infr_due,sum(pay_sec_update.amount) infr_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) infr_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service= 'infrastructure' and users.occupancy = 'landlord' and users.mobile_no = ?";
         $infr_sql = "select DISTINCT users.name_value infr_name, users.mobile_no infr_mobile, sum(pay_sec_update.amount) infr_paid from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service= 'infrastructure' and users.occupancy = 'landlord' and users.mobile_no = ?";
-        if($infr_stmt = mysqli_prepare($link, $infr_sql))
+       $infr_stmt = mysqli_prepare($link, $infr_sql);
+      
+       if( $infr_stmt)
       {
               // Bind variables to the prepared statement as parameters
         mysqli_stmt_bind_param($infr_stmt, "s", $param_mobile_no);
@@ -153,16 +147,13 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
                 // Retrieve individual field value
                   
                     
-                    //$mobile_no = $row["mobile"];
-                    //$name_value = $row["Name"];
-                    $infr_due_temp =   $infr_outst_temp;                 //$infr_fixed_amount; //number_format($infr_row["infr_due"],0);
-                    $infr_paid = number_format($infr_row["infr_paid"],2);
-                    $infr_diff_temp = $infr_outst_temp - $infr_row["infr_paid"];  //number_format($infr_row["infr_difference"],0);
+                    $mobile_no = $infr_row["infr_mobile"];
+                    $name_value = $infr_row["infr_name"];
                     
-                    $infr_due = number_format($infr_due_temp,2);
-                    $infr_diff = number_format($infr_diff_temp,2);
-                    
-                   
+                                        
+                    $infr_due = number_format($infr_fixed_amount,0);
+                    $infr_paid = number_format($infr_row["infr_paid"]+ $row["infr_prev_pay"],0);
+                    $infr_diff = number_format(($infr_row["infr_paid"]+ $row["infr_prev_pay"]) - $infr_fixed_amount,0);
                                         
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
@@ -215,7 +206,7 @@ $pdf->Image(__ROOT__ . '/tcpdflib/images/letter_head_x75.jpg',0, 0, 0, 0, 'JPG',
 
 $html_receipt = <<<EOD
         <h3>-------------------------- PAYMENT STATUS -------------------------------</h3>
-        <p><h4>Payment Details for $todaysdate </h4></p>
+        <p><h4>Payment Details as at  $todaysdate </h4></p>
 EOD;
 
 // Print text using writeHTMLCell()
@@ -225,12 +216,12 @@ $pdf->writeHTMLCell(0,0,20,35, $html_receipt, 0, 1, 0, true,'C', true);
 $html= <<<EOD
 <table cellspacing="0" cellpadding="1" border="1" style="border-color:gray;">
     <tr>
-        <td style="background-color:green;color:white;">Name</td>
+        <td style="background-color:white;color: Blue;">Name</td>
         <td>$name_value</td>
         	
     </tr>
     <tr>
-        <td style="background-color:green;color:white;">Mobile number</td>
+        <td style="background-color:white;color: Blue;">Mobile number</td>
                 <td>$mobile_no</td>
     </tr>
 	   
@@ -252,58 +243,32 @@ $pdf->write2DBarcode($qrdata, 'QRCODE,H', 120, 60, 25, 25, $style, 'N');
 //Image(file, x = '', y = '', w = 0, h = 0, type = '', link = nil, align = '', resize = false, dpi = 300, palign = '', ismask = false, imgmask = false, border = 0, fitbox = false, hidden = false, fitonpage = false) ⇒ Object
 $pdf->Image(__ROOT__ . $image,120, 60, 25, 25, 'JPG','T','',false,300,'C', false,false);
 ///
-$html_before_21 = <<<EOD
-<h4>PAYMENT MADE BEFORE DECEMBER, 2021</h4>
-<table cellspacing="0" cellpadding="1" border="1" style="border-color:gray;">
-    <tr style="background-color:green;color:white;">
-        <td></td>
-        <td>Security (=N=)</td>
-        <td>Infrastructure (=N=)</td>
-	
-    </tr>
-    <tr>
-        <td style="background-color:green;color:white;">Contribution</td>
-                <td>$sec_prev_pay</td>
-		<td>$infr_prev_pay</td>
-		
-    </tr>
-	<tr>
-        <td style="background-color:green;color:white;">Outstanding</td>
-       		<td>$sec_outst</td>
-                <td>$infr_outst</td>
-        </tr>
-    
-</table>
-EOD;
 
-// Print text using writeHTMLCell()
-//writeHTMLCell(w, h, x, y, html = '', border = 0, ln = 0, fill = 0, reseth = true, align = '', autopadding = true) ⇒ Object
-$pdf->writeHTMLCell(0,0,20,120, $html_before_21, 0, 1, 0, true,'', true);
 
 
 $html_after_21 = <<<EOD
-<h4>PAYMENT MADE AFTER DECEMBER, 2021</h4>
+
 <table cellspacing="0" cellpadding="1" border="1" style="border-color:gray;">
-    <tr style="background-color:green;color:white;">
+    <tr style="background-color:white;color: Blue;">
         <td></td>
         <td>Security (=N=)</td>
         <td>Infrastructure (=N=)</td>
 	
     </tr>
     <tr>
-        <td style="background-color:green;color:white;">Cumulative Amount Due</td>
+        <td style="background-color:white;color: Blue;">Cumulative Amount Due</td>
                 <td>$sec_due</td>
 		<td>$infr_due</td>
 		
     </tr>
 	<tr>
-        <td style="background-color:green;color:white;">Amount Paid </td>
+        <td style="background-color:white;color: Blue;">Amount Paid </td>
        		<td>$sec_paid</td>
                 <td>$infr_paid</td>
         </tr>
         
     <tr>
-        <td style="background-color:green;color:white;">Balance</td>
+        <td style="background-color:white;color: Blue;">Balance</td>
        		<td>$sec_diff</td>
                 <td>$infr_diff</td>
         </tr>
@@ -312,7 +277,7 @@ $html_after_21 = <<<EOD
 EOD;
 
 // Print text using writeHTMLCell()
-$pdf->writeHTMLCell(0,0, 20,170, $html_after_21, 0, 1, 0, true, '', true);
+$pdf->writeHTMLCell(0,0, 20,120, $html_after_21, 0, 1, 0, true, '', true);
 
 //
 

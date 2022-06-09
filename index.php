@@ -12,7 +12,7 @@ session_start();
  ?>
     
    
-    <header class="text-center text-white masthead" style="background:url('../images/ramsme.png')no-repeat center center;background-size:cover;">
+    <header class="text-center text-white masthead" style="background:url('../images/ramsme.jpg')no-repeat center center;background-size:cover;">
         <div class="overlay"></div>
         <div class="container">
             <div class="row">

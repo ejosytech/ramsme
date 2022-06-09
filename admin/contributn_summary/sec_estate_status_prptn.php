@@ -25,7 +25,7 @@ $output = '';
   $page = $_SESSION["page"];
   $condition = $_SESSION["condition"];
    
-  $limit = 5; // Amount of data per page
+  $limit = 40; // Amount of data per page
                     // Create a query to display how many data will be displayed in the tables in the database
                     $limit_start = ($page - 1) * $limit;
                                     
@@ -37,16 +37,15 @@ $output = '';
                     if($result = mysqli_query($link, $sql))
                     {
                         if(mysqli_num_rows($result) > 0){
-                            $output .= " <table class="."table table-bordered table-striped". ">
+                            $output .= " <table class="."table  table-bordered table-striped". ">
                                     <thead>
                                     <tr>
-                                           <th><u><b>Phone</b></u></th>
-                                           <th><u><b>Name</b></u></th>
-                                           <th><u><b>Dec 2021 Contribution</b></u></th>
-                                            <th><u><b>Dec 2021 Outstanding</b></u></th>
-                                            <th><u><b>Amount Due</b></u></th>
-                                            <th><u><b>Cumulative Payment</b></u></th>
-                                            <th><u><b>Balance</b></u></th>
+
+                                           <th style=" . "text-align:center;" . "><u><b>Phone</b></u></th>
+                                           <th style=" . "text-align:center;" . "><u><b>Name</b></u></th>
+                                           <th style=" . "text-align:center;" ."><u><b>Cumulative <br> Payment Due</b></u></th>
+                                            <th style=" . "text-align:center;" ."><u><b>Cumulative <br> Payment Made</b></u></th>
+                                            <th style=" . "text-align:center;" ."><u><b>Balance</b></u></th>
                                             
                                     </tr>
                                                                          
@@ -58,9 +57,15 @@ $output = '';
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                                                         
+                                    </tr>';
+                               $output .= '<tr>
                                         <td></td>
-                                        <td></td>    
-                                            
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                                                         
                                     </tr>';
                                     
                    while($row = mysqli_fetch_array($result)){
@@ -68,18 +73,29 @@ $output = '';
                        
                       $output .= '<tr readonly>
                                     
-                                        <td>' . $row['mobile'] . '</td>
-                                        <td>' . $row['vname'] . '</td>
-                                        <td>'  . number_format($row['contr'],2) . '</td>
-                                        <td>'  . number_format($row['outst'],2) . '</td>
-                                        <td>'  . number_format($row['due'],2) . '</td>
-                                        <td>' . number_format($row['paid'],2) .'</td>
-                                        <td>' . number_format($row['difference'],2) .  '</td>
+                                        <td style=' . 'text-align:center;' .'>' . substr($row['mobile'],0,4)."***".substr($row['mobile'],7,10). '</td>
+                                        <td style=' . 'text-align:left;' .'>' . $row['vname'] . '</td>
+                                            
+                                                                       
+                                        <td>'  . number_format($row['contr']+$row['outst']+$row['due'],2) . '</td>
+                                        <td>'  . number_format($row['contr']+$row['paid'],2) . '</td>
+                                        <td>'  . number_format(($row['contr']+$row['paid'])-($row['contr']+$row['outst']+$row['due']),2) . '</td>
+                                       
                                             
                                                                                 
                                     </tr>';
+                      $output .= '<tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                                                         
+                                    </tr>';
                                 
                                 }
+                                //
+                                 
                                 //
                               
                                  $output.= '</tbody>                           
@@ -113,7 +129,7 @@ $output = '';
 $pdf->AddPage();
 
 $html_receipt = <<<EOD
-        <h3>----------- INFRASTRUCTURE PAYMENT STATUS -----------------------</h3>
+        <h3>----------- SECURITY PAYMENT STATUS -----------------------</h3>
         <p><h4>Payment Details for $todaysdate </h4></p>
 EOD;
 

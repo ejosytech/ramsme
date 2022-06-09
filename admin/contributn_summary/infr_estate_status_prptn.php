@@ -25,7 +25,7 @@ $output = '';
   $page = $_SESSION["page"];
   $condition = $_SESSION["condition"];
    
-  $limit = 5; // Amount of data per page
+  $limit = 40; // Amount of data per page
                     // Create a query to display how many data will be displayed in the tables in the database
                     $limit_start = ($page - 1) * $limit;
                                     
@@ -40,40 +40,52 @@ $output = '';
                             $output .= " <table class="."table table-bordered table-striped". ">
                                         <thead>
                                            <tr>
-                                            <th><u><b>Phone</b></u></th>
-                                            <th><u><b>Name</b></u></th>
-                                            <th><u><b>Dec 2021 Contribution</b></u></th>
-                                            <th><u><b>Dec 2021 Outstanding <br> [N650,000.00 - Dec 2021 Contribution]</b></u></th>
-                                            <th><u><b>Amount Due</b></u></th>
-                                            <th><u><b>Cumulative Payment</b></u></th>
-                                            <th><u><b>Balance</b></u></th> 
+                                           <th><u><b>Phone</b></u></th>
+                                           <th><u><b>Name</b></u></th>
+                                           <th><u><b>Cumulative <br> Payment Due</b></u></th>
+                                            <th><u><b>Cumulative <br> Payment Made</b></u></th>
+                                            <th><u><b>Balance</b></u></th>
                                             
                                     </tr>
                                 </thead>
                                 <tbody> ";
-                            $output .= '<tr>
+                           $output .= '<tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                                                         
+                                    </tr>';
+                               $output .= '<tr>
                                         <td></td>
-                                        <td></td>    
-                                            
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                                                         
                                     </tr>';
                                     
                    while($row = mysqli_fetch_array($result)){
                        
                       $output .= '<tr readonly>
                                     
-                                        <td>' . $row['mobile'] . '</td>
+                                        <td>' . substr($row['mobile'],0,4)."***".substr($row['mobile'],7,10). '</td>
                                         <td>' . $row['vname'] . '</td>
-                                        <td>'  . number_format(($row['contr']),2) . '</td>
-                                        <td>'  . number_format(($infr_fixed_amount - $row['contr']),2) . '</td>
-                                        <td>' . number_format(($infr_fixed_amount - $row['contr']),2) . '</td>
-                                        <td>' . number_format($row['paid'],2) . '</td>
-                                        <td>' . number_format(($infr_fixed_amount - $row['contr'] - $row['paid']),2) . '</td>
+
+                                        <td>'  . number_format($infr_fixed_amount,2) . '</td>
+                                        <td>'  . number_format(($row['contr']+$row['paid']),2) . '</td>
+                                        <td>' . number_format(($row['contr'] + $row['paid']) - $infr_fixed_amount ,2). '</td>
                                         
+                                        
+                                    </tr>';
+                       $output .= '<tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                                                         
                                     </tr>';
                                 
                                 }

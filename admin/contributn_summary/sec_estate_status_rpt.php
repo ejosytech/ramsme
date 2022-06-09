@@ -96,7 +96,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                     $_SESSION["page"]= $page;                   
                     $_SESSION["condition"]= $condition;
                     
-                    $limit = 5; // Amount of data per page
+                    $limit = 40; // Amount of data per page
                     // Create a query to display how many data will be displayed in the tables in the database
                     $limit_start = ($page - 1) * $limit;
                                     
@@ -113,27 +113,27 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                                        // echo "<th>Date of Complain</th>";
                                         echo "<th>Phone</th>";
                                         echo "<th>Name</th>";
-                                        echo "<th>Dec 2021 Contribution</th>";
-                                        echo "<th>Dec 2021 Outstanding</th>";
-                                        echo "<th>Amount Due</th>";
-                                        echo "<th>Cumulative Payment</th>";
+                                        echo "<th>Cumulative Payment Due</th>";
+                                        echo "<th>Cumulative Payment Made</th>";
                                         echo "<th>Balance</th>";
-                                        // echo "<th>Action</th>";
-                                    echo "</tr>";
+                                        echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
                                 while($row = mysqli_fetch_array($result)){
                                     echo "<tr readonly>";
-                                      // echo "<td>" . $row['entry'] . "</td>";
-                                       // echo "<td>" . $row['vdate'] . "</td>";
+                                     
                                         echo "<td>" . $row['mobile'] . "</td>";
                                         echo "<td>" . $row['vname'] . "</td>";
-                                        echo "<td>" . number_format($row['contr'],2) . "</td>";
-                                        echo "<td>" . number_format($row['outst'],2) . "</td>";
-                                        echo "<td>" . number_format($row['due'],2) . "</td>";
-                                        echo "<td>" . number_format($row['paid'],2) . "</td>";
-                                        echo "<td>" . number_format($row['difference'],2) . "</td>";
+                                       
+                                        // Total Due  = contr + outst + due 
+			                // Contribution to date = contr + paid
+                                        // Balance = (contr + outst + due) -  (contr + paid)
                                         
+                                        
+                                        echo "<td>" . number_format($row['contr']+$row['outst']+$row['due'],2) . "</td>";
+                                        echo "<td>" . number_format($row['contr']+$row['paid'],2) . "</td>";
+                                        echo "<td>" . number_format(($row['contr']+$row['paid'])-($row['contr']+$row['outst']+$row['due']),2) . "</td>";
+                                                                             
                                     echo "</tr>";
                                 }
                                 //

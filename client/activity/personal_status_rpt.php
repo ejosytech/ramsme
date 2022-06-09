@@ -13,7 +13,7 @@ include_once(__ROOT__.'/qrcode/qrlib.php');
 
 
 // Define variables and initialize with empty values
-$name_value = $mobile_no = $due = $paid = $difference = $role = $sec_due = $sec_paid = $sec_difference = $infr_due = $infr_paid = $infr_difference ="";
+$name_value = $mobile_no = $due = $paid = $difference = $role = $sec_due = $sec_paid = $sec_difference = $infr_due = $infr_paid = $infr_difference = $sec_diff = "";
 $name_err = $mobile_no_err = $complain_err = $attachment_err= $date_err = "";
  
 // Display Exist Content
@@ -28,7 +28,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
 // EXTRACT PREVIOUS PAYMENTS DETAILS BEFORE 2021
 
   // $sql = "SELECT * FROM users WHERE mobile_no = ?";
-$sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outstanding,infr_outst_dec21 infr_outstanding,infr_contr_dec21 infr_prev_pay from users where occupancy = 'landlord' and mobile_no = ?";
+$sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outstanding, infr_outst_dec21 infr_outstanding,infr_contr_dec21 infr_prev_pay from users where occupancy = 'landlord' and mobile_no = ?";
 
              
       if($stmt = mysqli_prepare($link, $sql))
@@ -51,17 +51,12 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
                 // Retrieve individual field value
                   
                     $location = $row["location"];         
-                    //$sec_prev_pay = number_format($row["sec_prev_pay"],0);
-                    $sec_prev_pay_temp = $row["sec_prev_pay"];
-                    $sec_outst_temp = $row["sec_outstanding"];
-                    $infr_prev_pay_temp = $row["infr_prev_pay"];
-                    $infr_outst_temp = ($infr_fixed_amount - $row["infr_prev_pay"]);// What was paid so far is deducted from fix amount for infracstructure
-                    // Formating 
-                    $sec_prev_pay =  number_format($sec_prev_pay_temp,0);
-                    $sec_outst = number_format($sec_outst_temp,0);
-                    $infr_prev_pay = number_format($infr_prev_pay_temp,0);
-                    $infr_outst = number_format($infr_outst_temp,0);
-                   
+                    $sec_prev_pay = $row["sec_prev_pay"];
+                    $sec_outst = $row["sec_outstanding"];
+                    $infr_prev_pay = $row["infr_prev_pay"];
+                    //
+                    
+                    
                                         
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
@@ -76,7 +71,7 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
         }
         
         // Close statement
-        mysqli_stmt_close($stmt);
+        //mysqli_stmt_close($stmt);
 
 // Display Previous Record Content
  // Prepare a select statement
@@ -85,16 +80,17 @@ $sql = "select location, sec_contr_dec21 sec_prev_pay, sec_outst_dec21 sec_outst
    // $sql = "SELECT * FROM users WHERE mobile_no = ?";
 $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' and users.mobile_no = ?";
 
+$sec_stmt = mysqli_prepare($link, $sec_sql);
              
-      if($sec_stmt = mysqli_prepare($link, $sec_sql))
+      if($sec_stmt)
       {
-              // Bind variables to the prepared statement as parameters
+        // Bind variables to the prepared statement as parameters
         mysqli_stmt_bind_param($sec_stmt, "s", $param_mobile_no);
         
         // Set parameters
         $param_mobile_no = trim($_SESSION["mobile_no"]);
         //$role = trim($_SESSION["role"]);
-        
+ 
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($sec_stmt)){
             $sec_result = mysqli_stmt_get_result($sec_stmt);
@@ -104,17 +100,12 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
                 contains only one row, we don't need to use while loop */
                 $sec_row = mysqli_fetch_array($sec_result, MYSQLI_ASSOC);
                 // Retrieve individual field value
-                  
+        
+                    //
+                    $sec_due = number_format($sec_row["sec_due"] + $sec_prev_pay + $sec_outst, 0);
+                    $sec_paid = number_format($sec_row["sec_paid"] + $sec_prev_pay,0);
+                    $sec_diff = number_format(($sec_row["sec_paid"] + $sec_prev_pay)-($sec_row["sec_due"] + $sec_prev_pay + $sec_outst) ,0);
                               
-                    
-                    $mobile_no = $sec_row["sec_mobile"];
-                    $name_value = $sec_row["sec_name"];
-                    $sec_due = number_format($sec_row["sec_due"],0);
-                    $sec_paid = number_format($sec_row["sec_paid"],0);
-                    $sec_diff = number_format($sec_row["sec_difference"],0);
-                    
-                                       
-                                        
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
                     header("location: error.php");
@@ -124,17 +115,20 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
             } else{
                 //echo "Oops! Something went wrong. Please try again later.";
                 header("location: error.php");
+                exit();
             }
         }
         
         // Close statement
-        mysqli_stmt_close($sec_stmt);
+      //  mysqli_stmt_close($sec_stmt);
         
         
         
        // $infr_sql = "select DISTINCT users.name_value infr_name, users.mobile_no infr_mobile, amount_due(users.occupancy, users.no_rooms, users.effective_date) infr_due,sum(pay_sec_update.amount) infr_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) infr_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service= 'infrastructure' and users.occupancy = 'landlord' and users.mobile_no = ?";
         $infr_sql = "select DISTINCT users.name_value infr_name, users.mobile_no infr_mobile, sum(pay_sec_update.amount) infr_paid from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service= 'infrastructure' and users.occupancy = 'landlord' and users.mobile_no = ?";
-        if($infr_stmt = mysqli_prepare($link, $infr_sql))
+       $infr_stmt = mysqli_prepare($link, $infr_sql);
+      
+       if( $infr_stmt)
       {
               // Bind variables to the prepared statement as parameters
         mysqli_stmt_bind_param($infr_stmt, "s", $param_mobile_no);
@@ -154,15 +148,13 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
                 // Retrieve individual field value
                   
                     
-                    //$mobile_no = $row["mobile"];
-                    //$name_value = $row["Name"];
-                    //$name_value = $row["Name"];
-                    $infr_due_temp =   $infr_outst_temp;                 //$infr_fixed_amount; //number_format($infr_row["infr_due"],0);
-                    $infr_paid = number_format($infr_row["infr_paid"],0);
-                    $infr_diff_temp = $infr_outst_temp - $infr_row["infr_paid"];  //number_format($infr_row["infr_difference"],0);
+                    $mobile_no = $infr_row["infr_mobile"];
+                    $name_value = $infr_row["infr_name"];
                     
-                    $infr_due = number_format($infr_due_temp,0);
-                    $infr_diff = number_format($infr_diff_temp,0);
+                                        
+                    $infr_due = number_format($infr_fixed_amount,0);
+                    $infr_paid = number_format($infr_row["infr_paid"]+ $row["infr_prev_pay"],0);
+                    $infr_diff = number_format(($infr_row["infr_paid"]+ $row["infr_prev_pay"]) - $infr_fixed_amount,0);
                                         
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
@@ -242,73 +234,13 @@ $sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobil
         <?php                
          $grade = 'text-black bg-secondary'               
         ?>   
-   <div class ="row"> 
-     <div class="alert alert-info" role="alert">   
-         <b> PAYMENT MADE BEFORE DECEMBER, 2021</b>
-     </div>
-     </div>                   <!------ PREVIOUS RECORDS ------>
-                       
-   <div class="row">
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body <?php echo $grade ?> ">
-          <h5 class="card-title"><b>Security</b></h5>
-          
-                         <div class="form-group">
-                            <label>Payment</label>
-                            <div class="input-group mb-3">
-                            <span class="input-group-text">=N=</span>
-                            <input type="text" name="sec_prev_pay"  class="form-control" value="<?php echo $sec_prev_pay; ?>" readonly>
-                             <span class="input-group-text">.00</span>
-                         </div>
-                             </div>
-                        
-                        <div class="form-group">
-                            <label>Outstanding</label>
-                            <div class="input-group mb-3">
-                            <span class="input-group-text">=N=</span>
-                            <input type="text" name="sec_outst"  class="form-control" value="<?php echo $sec_outst; ?>" readonly>
-                            <span class="input-group-text">.00</span>
-                        </div>
-                             </div>
-                                             
-        
-                        </div>
-    </div>
-  </div>
-      
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body <?php echo $grade ?>">
-          <h5 class="card-title"><b>Infrastructure</b></h5>
-                        <div class="form-group">
-                        <label>Payment</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">=N=</span>
-                            <input type="text" name="infr_prev_pay" class="form-control" value="<?php echo $infr_prev_pay; ?>" readonly>
-                            <span class="input-group-text">.00</span>
-                        </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Outstanding</label>
-                            <div class="input-group mb-3">
-                            <span class="input-group-text">=N=</span>
-                            <input type="text" name="infr_outst" class="form-control" value="<?php echo $infr_outst; ?>" readonly>
-                            <span class="input-group-text">.00</span>
-                        </div>
-                            </div>
-                        
-                       
-      </div>
-    </div>
-  </div>
-</div>                   
+                  
                         
    <p></p>                      
                         
    <div class ="row"> 
    <div class="alert alert-info" role="alert">
-      <b>   PAYMENT MADE AFTER DECEMBER, 2021   </b>
+      <b>   PAYMENT SUMMARY  </b>
   </div>
    </div>                      
                       

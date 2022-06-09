@@ -47,7 +47,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                  <h3 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name_value"]); ?></b></h3>
                      
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 col-md-12">
                     <div class="mt-5 mb-3 clearfix">
                  
                         <a href="create.php" class="btn btn-primary" role="button" >Add New Record</a>
@@ -56,7 +56,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                     </div>
                     
                     <div class="card-body">
-			<div class="col-sm-12">
+			<div class="col-sm-12 col-md-12">
 				<h5 class="card-title"><i class="fa fa-fw fa-search"></i> Find User</h5>
 				<form method="get">
 				  <div class="row">

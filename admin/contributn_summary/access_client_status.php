@@ -57,12 +57,12 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
                             <select id="mobile_no" name ="mobile_no" class="form-control" onchange="access_client_status(this.value)" readonly >
 				<option value="Mobile Number" selected="selected">Mobile Number</option>
 				<?php
-				$sql = "SELECT mobile_no FROM users";
+				$sql = "SELECT mobile_no,name_value FROM users";
 				$resultset = mysqli_query($link, $sql);
 				while( $rows = mysqli_fetch_assoc($resultset) )
                                 { 
 				?>
-				<option value="<?php echo $rows["mobile_no"]; ?>"><?php echo $rows["mobile_no"]; ?></option>
+				<option value="<?php echo $rows["mobile_no"]; ?>"><?php echo $rows["mobile_no"] . " : " . $rows["name_value"] ; ?></option>
 				<?php }	?>
 			</select>  
                         </div>

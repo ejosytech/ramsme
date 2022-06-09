@@ -96,7 +96,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                     $_SESSION["page"]= $page;                   
                     $_SESSION["condition"]= $condition;
                     
-                    $limit = 5; // Amount of data per page
+                    $limit = 40; // Amount of data per page
                     // Create a query to display how many data will be displayed in the tables in the database
                     $limit_start = ($page - 1) * $limit;
                                     
@@ -110,16 +110,13 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                             echo '<table class="table table-bordered table-striped">';
                                 echo "<thead>";
                                     echo "<tr>";
-                                      //  echo "<th>#</th>";
-                                       // echo "<th>Date of Complain</th>";
+                                  
                                         echo "<th>Phone</th>";
                                         echo "<th>Name</th>";
-                                        echo "<th>Dec 2021 Contribution</th>";
-                                        echo "<th>Dec 2021 Outstanding <br> [N650,000.00 - Dec 2021 Contribution]</th>";
-                                        echo "<th>Amount Due</th>";
-                                        echo "<th>Cumulative Payment</th>";
+                                        echo "<th>Cumulative Payment Due</th>";
+                                        echo "<th>Cumulative Payment Made</th>";
                                         echo "<th>Balance</th>";
-                                        // echo "<th>Action</th>";
+
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
@@ -129,11 +126,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                                        // echo "<td>" . $row['vdate'] . "</td>";
                                         echo "<td>" . $row['mobile'] . "</td>";
                                         echo "<td>" . $row['vname'] . "</td>";
-                                        echo "<td>" . number_format(($row['contr']),2) . "</td>";
-                                        echo "<td>" . number_format(($infr_fixed_amount - $row['contr']),2) . "</td>";
-                                        echo "<td>" . number_format(($infr_fixed_amount - $row['contr']),2) . "</td>";
-                                        echo "<td>" . number_format($row['paid'],2) . "</td>";
-                                        echo "<td>" . number_format(($infr_fixed_amount - $row['contr'] - $row['paid']),2) . "</td>";
+                                        echo "<td>" . number_format($infr_fixed_amount,2) . "</td>";
+                                        echo "<td>" . number_format(($row['contr']+$row['paid']),2) . "</td>";
+                                        echo "<td>" . number_format(($row['contr'] + $row['paid']) - $infr_fixed_amount,2) . "</td>";
                                         
                                     echo "</tr>";
                                 }

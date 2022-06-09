@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
  <?php
- include 'adminHF/sec_header.php';
+ include '../adminHF/header_admin.php';
  ?>
      <div id="main-wrapper" class="container">
     <div class="row justify-content-center">
@@ -20,7 +20,7 @@
     </div>
                  </div> </div> </div> </div>
  <?php
- include 'adminHF/sec_footer.php';
+ include '../adminHF/footer_admin.php';
  ?>
     
 </html>
