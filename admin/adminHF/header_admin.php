@@ -61,6 +61,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="/admin/contributn_summary/sec_estate_status_rpt.php" target="_self">Security Payments</a>
                              <a class="dropdown-item" href="/admin/contributn_summary/infr_estate_status_rpt.php" target="_self">Infrastructure Payments</a>
+                             <a class="dropdown-item" href="/admin/contributn_summary/multiprn_sec_status_prtn.php" target="_self">Print Receipts[Security]</a>
                              <a class="dropdown-item" href="/admin/contributn_summary/access_client_status.php" target="_self">Check Residents Status</a>
                         </div>
                     </li>
