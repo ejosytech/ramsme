@@ -145,7 +145,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                     <h3 class="h4 font-weight-bold text-theme">Login</h3>
                                 </div>
                                 <h6 class="h5 mb-0">Welcome back!</h6>
-                                <p class="mt-2 mb-5">Enter your mobile number and password to access your account panel.</br>In case you don't have an account yet? Create yours now by <span class="badge rounded-pill bg-primary">  <a class="btn btn-primary action-button" role="button" href="/client/register.php" target="_self">Signing Up</a></span></p>
+                                <p class="mt-2 mb-5">Enter your mobile number and password to access your account panel.
+                                    
+                                     <!--</br>In case you don't have an account yet? Create yours now by <span class="badge rounded-pill bg-primary">  <a class="btn btn-primary action-button" role="button" href="/client/register.php" target="_self">Signing Up</a></span></p> -->
                                
                                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                                     <div class="form-group mb-3">

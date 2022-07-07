@@ -201,6 +201,28 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
     }
     
     
+     // INITIALIZE and ALLOWING CONSTRAINT 
+     // INITIALIZATION: This is to enable the capturing and presentation of data contained in the join query 
+     // CONSTRAINT: Required to allow the underlisted to work:
+                    //  ALTER TABLE users
+                    //  ADD CONSTRAINT FK_user_payments_id
+                    //  FOREIGN KEY (mobile_no) REFERENCES payments(mobile_no)
+                    //  ON UPDATE CASCADE
+                    //  ON DELETE CASCADE;
+
+                    //  ALTER TABLE payments
+                    //  ADD CONSTRAINT FK_payments_pay_sec_update_id
+                    //  FOREIGN KEY (mobile_no) REFERENCES pay_sec_update(mobile_no)
+                    //  ON UPDATE CASCADE
+                    //  ON DELETE CASCADE;
+
+
+                 initialize_pay_sec_update_sec($link,$occupancy,$mobile_no,$name_value); 
+                 initialize_payments_sec($link,$occupancy,$mobile_no,$name_value);
+                 initialize_pay_sec_update_infr($link,$occupancy,$mobile_no,$name_value);
+                 initialize_payments_infr($link,$occupancy,$mobile_no,$name_value);
+                 
+    
     // Check input errors before inserting in database
             
         // Prepare an insert statement
@@ -228,13 +250,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Redirect to login page
-                 //header("location: valid.php?successmsg=success_reg");
-                //header("location: login.php");
+                header("location: valid.php?successmsg=success_reg");
+                header("location: login.php");
                  
-                 // INITIALIZE pay_sec_update for if Landloard 
-                 
-                 initialize_pay_sec_update_sec($link,$occupancy,$mobile_no,$name_value);
-                 initialize_pay_sec_update_infr($link,$occupancy,$mobile_no,$name_value);
+              
                 
                  exit();
             } 
@@ -264,9 +283,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
     mysqli_close($link);
 } 
 
-function initialize_pay_sec_update_sec($linkx,$occupancyx,$mobile_nox,$name_valuex)
+function initialize_payments_sec($linkx,$occupancyx,$mobile_nox,$name_valuex)
 {
-           $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+           $sql = "INSERT INTO payments (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
          
         if($stmtx = mysqli_prepare($linkx, $sql))
         {
@@ -280,7 +299,7 @@ function initialize_pay_sec_update_sec($linkx,$occupancyx,$mobile_nox,$name_valu
             $param_amount = 0;
             $param_service = "security";
             $param_attachment = "";
-           $param_remark = "initiation";
+            $param_remark = "initiation";
             //
       
             // Attempt to execute the prepared statement
@@ -302,13 +321,12 @@ function initialize_pay_sec_update_sec($linkx,$occupancyx,$mobile_nox,$name_valu
             mysqli_stmt_close($stmtx);
             }
         }          
-
-
-function initialize_pay_sec_update_infr($linkx,$occupancyx,$mobile_nox,$name_valuex)
+function initialize_payments_infr($linkx,$occupancyx,$mobile_nox,$name_valuex)
 {
-           if ($occupancyx == "landlord")
+  if ($occupancyx == "landlord")
         {
-            $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+          
+           $sql = "INSERT INTO payments (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
          
         if($stmtx = mysqli_prepare($linkx, $sql))
         {
@@ -322,13 +340,13 @@ function initialize_pay_sec_update_infr($linkx,$occupancyx,$mobile_nox,$name_val
             $param_amount = 0;
             $param_service = "infrastructure";
             $param_attachment = "";
-           $param_remark = "initiation";
+            $param_remark = "initiation";
             //
       
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmtx))
             {
-               header("location: valid.php?successmsg=success_reg");
+               //header("location: valid.php?successmsg=success_reg");
                
                 } 
             else
@@ -343,7 +361,95 @@ function initialize_pay_sec_update_infr($linkx,$occupancyx,$mobile_nox,$name_val
             // Close statement
             mysqli_stmt_close($stmtx);
             }
+        } 
+}
+                
+
+function initialize_pay_sec_update_sec($linkx,$occupancyx,$mobile_nox,$name_valuex)
+{
+        
+            $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+         
+        if($stmtx = mysqli_prepare($linkx, $sql))
+        {
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmtx, "sssssss", $param_mobile_no, $param_date,$param_name, $param_amount, $param_service, $param_attachment,$param_remark );
+       
+            echo '$mobile_nox'.$mobile_nox;
+            echo '$name_valuex'.$name_valuex;
+            //exit();
+            
+            // Set parameters
+            $param_mobile_no = $mobile_nox;
+            $param_name = $name_valuex;
+            $param_date = "";
+            $param_amount = 0;
+            $param_service = "security";
+            $param_attachment = "";
+           $param_remark = "initiation";
+            //
+      
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmtx))
+            {
+               // header("location: valid.php?successmsg=success_reg");
+               
+                } 
+            else
+            {
+                // URL doesn't contain valid id. Redirect to error page
+                   // header("location: error.php?errortype=insert_sql_err1");
+                    echo "Oops! Something went wrong. Please try again later.";
+                    exit();
+               
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmtx);
+            }
         }          
+
+function initialize_pay_sec_update_infr($linkx,$occupancyx,$mobile_nox,$name_valuex)
+{
+         if ($occupancyx == "landlord")
+        {
+          
+           $sql = "INSERT INTO pay_sec_update (mobile_no, pay_date, name_value, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
+         
+        if($stmtx = mysqli_prepare($linkx, $sql))
+        {
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmtx, "sssssss", $param_mobile_no, $param_date,$param_name, $param_amount, $param_service, $param_attachment,$param_remark );
+       
+            // Set parameters
+            $param_mobile_no = $mobile_nox;
+            $param_name = $name_valuex;
+            $param_date = "";
+            $param_amount = 0;
+            $param_service = "infrastructure";
+            $param_attachment = "";
+            $param_remark = "initiation";
+            //
+      
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmtx))
+            {
+               //header("location: valid.php?successmsg=success_reg");
+               
+                } 
+            else
+            {
+                // URL doesn't contain valid id. Redirect to error page
+                    header("location: error.php?errortype=insert_sql_err1");
+                    //echo "Oops! Something went wrong. Please try again later.";
+                    exit();
+               
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmtx);
+            }
+        } 
 }
 
 // Function defnition

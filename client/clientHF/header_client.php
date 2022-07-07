@@ -35,9 +35,9 @@
                     <li class="nav-item"><a class="nav-link" href="/client/activity/register_complain.php" target="_self">Complain</a></li>
                     <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Payments</a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="/client/activity/register_payment.php" target="_self">Register</a>
+                             <!--<a class="dropdown-item" href="/client/activity/register_payment.php" target="_self">Register</a> -->
                             <a class="dropdown-item" href="/client/activity/personal_status_rpt.php">Status</a>
-                             <a class="dropdown-item" href="/client/activity/personal_status_prnt.php">Print Receipt</a>
+                             <a class="dropdown-item" href="/client/activity/personal_status_prnt.php">Print Status</a>
                              <a class="dropdown-item" href="/paystack/payment.php" title="Security / Infrastructure" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="You can pay Security/Infrastructure levy via this Platform. Other Charges Applies, Please. The advantage is that your payment information are fed directly into the Database">Pay Levy</a>
                         </div>
                     </li>

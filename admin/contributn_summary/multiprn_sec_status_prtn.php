@@ -25,7 +25,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
 }
 
 //
-$sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.sec_contr_dec21 sec_prev_pay,users.sec_outst_dec21 sec_outstanding, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' group by users.mobile_no";
+$sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.sec_contr_dec21 sec_prev_pay,users.sec_outst_dec21 sec_outstanding, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' group by users.mobile_no";
 
 
  // PDF GENERATOR
@@ -38,7 +38,7 @@ $sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.
      $pdf->setPrintHeader(false);
      $pdf->setPrintFooter(false);
      // set font
-     $pdf->SetFont('helvetica', '', 11);
+     $pdf->SetFont('helvetica', '', 9);
      //set margin
      //TCPDF::SetMargins($left,$top,$right = -1,$keepmargins = false)
     $pdf->SetMargins( 5, 0 , 30, true);
@@ -82,6 +82,7 @@ $sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.
                                             $id_table_y=50;
                                             $account_table_y=62;
                                             $verify_y =77;
+                                            $demarcation_y = 87;
                                             
                                          }
                                          else
@@ -95,6 +96,7 @@ $sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.
                                             $id_table_y=50;
                                             $account_table_y=62;
                                             $verify_y =77;
+                                            $demarcation_y = 87;
                                              
                                          }
                                          
@@ -106,13 +108,14 @@ $sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.
                                                     $pdf->Image(__ROOT__ . '/tcpdflib/images/letter_head_x75.jpg',0, ($header_img_y + ($r*$adjust)), 0, 0, 'JPG','T','',false,300,'C', false,false);
                                                     //-------------------------------------------------------------------------------------------------------------------------------------------
                                                     // PASSPORT IMAGE
-                                                    if ($location<>"")
-                                                    {
+                                                    if ($location === "")
+                                                    { $location = "no_passport.jpg"; }
                                                      $image = '/upload/img/'.$location;
+                                                     //
                                                     // Image( filename, left, top, width, height, type, link, align, resize, dpi, align, ismask, imgmask, border, fitbox, hidden, fitonpage)
                                                     //Image(file, y = '', x = '', w = 0, h = 0, type = '', link = nil, align = '', resize = false, dpi = 300, palign = '', ismask = false, imgmask = false, border = 0, fitbox = false, hidden = false, fitonpage = false) ⇒ Object
                                                      $pdf->Image(__ROOT__ . $image,20 ,($image_y + ($r*$adjust)), 20, 20, 'JPG','T','',false,300,'C', false,false);
-                                                    }
+                                                    
                                                     ////
                                                     //-------------------------------------------------------------------------------------------------------------------------------------------
                                                     //QR DATA
@@ -189,6 +192,20 @@ $sec_sql = "select users.name_value sec_name, users.mobile_no sec_mobile, users.
 
                                                     //-------------------------------------------------------------------------------------------------------------------------------------------
                                             
+                                             // Print text using writeHTMLCell()
+                                                    $pdf->writeHTMLCell(0,0, 50,($account_table_y + ($r*$adjust)), $html_after_21, 0, 1, 0, true, '', true);
+
+                                                    //-------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                    $html_line = <<<EOD
+                                                       <p>------------------------------------------------------------------------------------------------------------------------------------</p>
+                                                    EOD;
+
+                                                    // Print text using writeHTMLCell()
+                                                    //writeHTMLCell(w, h, x, y, html = '', border = 0, ln = 0, fill = 0, reseth = true, align = '', autopadding = true) ⇒ Object
+                                                    $pdf->writeHTMLCell(0,0,5,( $demarcation_y + ($r*$adjust)), $html_line, 0, 1, 0, true,'C', true);
+
+                                                    //-------------------------------------------------------------------------------------------------------------------------------------------
                                             
                                             
                                             

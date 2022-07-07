@@ -83,16 +83,17 @@ include 'mainHF/header_reg.php';
   
 </Ol>
     
-    <!<!-- RAMSME Description  -->
+    <!-- RAMSME Description  -->
     
    <div class="alert alert-success" role="alert">
+       <!-- 
        <p class="card-text"> 
-        All landlords/Tenants within the vicinity of the Estate are encouraged to register/sign up with the Association via the the link:  <a href="/client/register.php" class="btn btn-primary" >Sign Up</a>
+       All landlords/Tenants within the vicinity of the Estate are encouraged to register/sign up with the Association via the the link:  <a href="/client/register.php" class="btn btn-primary" >Sign Up</a> 
        </p>
-           
+       --> 
     <hr>
-    <p class="card-text"> 
-        For More Information, please contact/email:  <span class="badge bg-danger rounded-pill">08177259069 / mail@ramsme.com </span>
+    <p> 
+        For More Information, please contact/email:  <span class="badge bg-danger rounded-pill"> 08177259069 / mail@ramsme.com </span>
     </p> 
     
     <p class="card-text"> <h4 class="alert-heading"> Thank You. </h4> </p>

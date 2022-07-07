@@ -152,8 +152,8 @@ $sec_stmt = mysqli_prepare($link, $sec_sql);
                     
                                         
                     $infr_due = number_format($infr_fixed_amount,0);
-                    $infr_paid = number_format($infr_row["infr_paid"]+ $row["infr_prev_pay"],0);
-                    $infr_diff = number_format(($infr_row["infr_paid"]+ $row["infr_prev_pay"]) - $infr_fixed_amount,0);
+                    $infr_paid = number_format($infr_row["infr_paid"]+ $infr_prev_pay,0);
+                    $infr_diff = number_format(($infr_row["infr_paid"]+ $infr_prev_pay) - $infr_fixed_amount,0);
                                         
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
@@ -179,6 +179,9 @@ $sec_stmt = mysqli_prepare($link, $sec_sql);
 
 //QR DATA
 $qrdata =  $mobile_no . ',' . $name_value . ',' . $sec_diff . ',' . $infr_diff;
+// Passport Location initiation
+if ($location === "")
+{ $location = "no_passport.jpg"; }
 $image = '/upload/img/'.$location;
 
 // create new PDF document
@@ -240,6 +243,8 @@ $style = array(
 $pdf->write2DBarcode($qrdata, 'QRCODE,H', 120, 60, 25, 25, $style, 'N');
 
 // PASSPORT IMAGE
+
+
 //Image(file, x = '', y = '', w = 0, h = 0, type = '', link = nil, align = '', resize = false, dpi = 300, palign = '', ismask = false, imgmask = false, border = 0, fitbox = false, hidden = false, fitonpage = false) ⇒ Object
 $pdf->Image(__ROOT__ . $image,120, 60, 25, 25, 'JPG','T','',false,300,'C', false,false);
 ///
@@ -281,7 +286,14 @@ $pdf->writeHTMLCell(0,0, 20,120, $html_after_21, 0, 1, 0, true, '', true);
 
 //
 
+$html_verify = <<<EOD
+        <h3>Verified (Sign/Date): _______________________</h3>
+        
+EOD;
 
+// Print text using writeHTMLCell()
+//writeHTMLCell(w, h, x, y, html = '', border = 0, ln = 0, fill = 0, reseth = true, align = '', autopadding = true) ⇒ Object
+$pdf->writeHTMLCell(0,0,20,200, $html_verify, 0, 1, 0, true,'C', true);
 
 
 // ---------------------------------------------------------

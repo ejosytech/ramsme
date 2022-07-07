@@ -18,8 +18,9 @@ session_start();
             <div class="row">
                 <div class="col-xl-9 mx-auto position-relative">
                     <h1 class="mb-5">Resident Association of Ministry of Mine and Steel Midhill (Corporative) Estate Management Portal</h1>
-                    <a class="btn btn-primary action-button" role="button" href="/client/register.php" target="_self"><span class="badge rounded-pill bg-warning"><h3>Sign Up</h3></span></a>
-                    
+                    <!--  
+                    <a class="btn btn-primary action-button" role="button" href="/client/register.php" target="_self"  ><span class="badge rounded-pill bg-warning"><h3>Sign Up</h3></span></a> 
+                     -->
                 </div>
                
             </div>
@@ -52,10 +53,14 @@ session_start();
             </div>
         </div>
     </section>
+    
+    
  
 
  <?php
 include 'mainHF/footer_home.php'; 
+
+
  ?>
 
 </html>

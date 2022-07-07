@@ -228,6 +228,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                  <p>
                  <a href="/admin/contributn_summary/sec_estate_status_prptn.php" class="btn btn-danger ml-3">Print</a>
                  </p>
+                 <p>
+                 <a href="/admin/contributn_summary/excel_sec_estate_rpt.php" class="btn btn-danger ml-3">Excel</a>
+                 </p>
              
         </div>
     </div>

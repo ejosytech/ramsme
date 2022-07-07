@@ -3,4 +3,5 @@
       - admin inquiry of client's payment status
       - update of payments
 - Complete Print (receipt, report - include dates )
-- Complete Paystack - split payment)
+- Complete Paystack - split payment)     ------done
+- Security Improvement
