@@ -25,7 +25,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
 }
 
 //
-$infr_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.infr_outst_dec21 infr_outstanding,users.infr_contr_dec21 infr_prev_pay, sum(pay_sec_update.amount) infr_paid from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'infrastructure' and users.occupancy = 'landlord' group by users.mobile_no";
+$infr_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.infr_outst_dec21 infr_outstanding,users.infr_contr_dec21 infr_prev_pay, sum(pay_sec_update.amount) infr_paid from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'infrastructure' and users.occupancy = 'landlord' and users.document = 'YES' group by users.mobile_no";
 
 
  // PDF GENERATOR

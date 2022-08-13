@@ -136,19 +136,19 @@ if(isset($_POST["mobile_no"]) && !empty($_POST["mobile_no"]))
     $pay_channel = 'others';
     
                 
-         $sql = "INSERT INTO payments (mobile_no, name_value,  pay_date, amount, pay_channel, service, attachment,remark) VALUES (?,?,?,?,?,?,?,?)";
+         $sql = "INSERT INTO pay_sec_update (mobile_no, name_value,  pay_date, amount, service, attachment,remark) VALUES (?,?,?,?,?,?,?)";
          
         if($stmt = mysqli_prepare($link, $sql))
         {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ssssssss", $param_mobile_no, $param_name_value, $param_date, $param_amount, $param_pay_channel, $param_service, $param_attachment,$param_remark );
+            mysqli_stmt_bind_param($stmt, "sssssss", $param_mobile_no, $param_name_value, $param_date, $param_amount, $param_service, $param_attachment,$param_remark );
             
             // Set parameters
             $param_mobile_no = $mobile_no;
             $param_name_value = $name_value;
             $param_date = $pay_date;
             $param_amount = $amount;
-            $param_pay_channel = $pay_channel;
+           // $param_pay_channel = $pay_channel;
             $param_service = $service;
             $param_attachment = $attachment;
             $param_remark = $remark;
@@ -213,12 +213,12 @@ if(isset($_POST["mobile_no"]) && !empty($_POST["mobile_no"]))
                             <select id="mobile_no" name ="mobile_no" class="form-control" onchange="admin_register_pay(this.value)" >
 				<option value="" selected="selected">Mobile Number</option>
 				<?php
-				$sql = "SELECT mobile_no FROM users";
+				$sql = "SELECT mobile_no, name_value FROM users";
 				$resultset = mysqli_query($link, $sql);
 				while( $rows = mysqli_fetch_assoc($resultset) )
                                 { 
 				?>
-				<option value="<?php echo $rows["mobile_no"]; ?>"><?php echo $rows["mobile_no"]; ?></option>
+				<option value="<?php echo $rows["mobile_no"]; ?>"><?php echo $rows["mobile_no"] . ' : ' . $rows["name_value"] ; ?></option>
 				<?php }	?>
 			</select>  
                         
@@ -271,7 +271,7 @@ if(isset($_POST["mobile_no"]) && !empty($_POST["mobile_no"]))
                         
                       
                         
-                        <div class="form-group">
+                <div class="form-group">
                             <label for="exampleFormControlTextarea1" class="form-label"><b>Additional Information: Remarks/Comments </b> </label>
                           <textarea class="form-control" id="exampleFormControlTextarea1" name = "remark" rows="4" required></textarea>
                             

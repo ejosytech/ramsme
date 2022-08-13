@@ -101,7 +101,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                     $limit_start = ($page - 1) * $limit;
                                     
                     // Attempt select query execution
-                    $sql = "select DISTINCT users.name_value vname,users.sec_contr_dec21 contr, users.sec_outst_dec21 outst, users.mobile_no mobile, amount_due(users.occupancy, users.no_rooms, users.effective_date) due, sum(pay_sec_update.amount) paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and pay_sec_update.service = 'security' " . $condition . " group by users.mobile_no LIMIT ". $limit_start . "," . $limit;
+                    $sql = "select DISTINCT users.mobile_no mobile, users.name_value vname, users.sec_contr_dec21 contr, users.sec_outst_dec21 outst,  amount_due(users.occupancy, users.no_rooms, users.effective_date) due, sum(pay_sec_update.amount) paid from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and pay_sec_update.service = 'security' " . $condition . " group by users.mobile_no LIMIT ". $limit_start . "," . $limit;
                     $no = $limit_start + 1;
                     //
                     if($result = mysqli_query($link, $sql)){
@@ -130,9 +130,10 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)   // Check i
                                         // Balance = (contr + outst + due) -  (contr + paid)
                                         
                                         
-                                        echo "<td>" . number_format($row['contr']+$row['outst']+$row['due'],2) . "</td>";
-                                        echo "<td>" . number_format($row['contr']+$row['paid'],2) . "</td>";
-                                        echo "<td>" . number_format(($row['contr']+$row['paid'])-($row['contr']+$row['outst']+$row['due']),2) . "</td>";
+                                       // echo "<td>" . number_format($row['contr']+$row['outst']+$row['due'],2) . "</td>";
+                                        echo "<td>" . number_format($row['contr']+ $row['outst']+$row['due'],2) . "</td>";   // cumulative payment due 
+                                        echo "<td>" . number_format($row['contr']+$row['paid'],2) . "</td>";  // cumulative payment made
+                                        echo "<td>" . number_format(($row['contr']+$row['paid'])-($row['contr']+$row['outst']+$row['due']),2) . "</td>"; // balance 
                                                                              
                                     echo "</tr>";
                                 }

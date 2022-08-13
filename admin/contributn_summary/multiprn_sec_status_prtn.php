@@ -25,7 +25,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true)// Check if t
 }
 
 //
-$sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.sec_contr_dec21 sec_prev_pay,users.sec_outst_dec21 sec_outstanding, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' group by users.mobile_no";
+$sec_sql = "select DISTINCT users.name_value sec_name, users.mobile_no sec_mobile, users.location locatn, users.sec_contr_dec21 sec_prev_pay,users.sec_outst_dec21 sec_outstanding, amount_due(users.occupancy, users.no_rooms, users.effective_date) sec_due, sum(pay_sec_update.amount) sec_paid, amount_due(users.occupancy, users.no_rooms, users.effective_date)- sum(pay_sec_update.amount) sec_difference from users INNER JOIN pay_sec_update where users.mobile_no = pay_sec_update.mobile_no and  pay_sec_update.service = 'security' and users.document = 'YES' group by users.mobile_no";
 
 
  // PDF GENERATOR

@@ -8,6 +8,7 @@
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once(__ROOT__.'/config.php');
 // Define variables and initialize with empty values
+$document = 'NO';
 $name = $mobile_no = $phone = $avenue = $street = $email = $role =  $occupancy = $addinfo =  $effective_date = $sec_contr_dec21 = $infr_contr_dec21 = $infr_outst_dec21 = $sec_outst_dec21 = "";
 $name_err = $phone_err = $avenue_err = $street_err = $email_err = $role_err = $occupancy_err = $addinfo_err = $location_err= "";
 
@@ -45,6 +46,7 @@ $name_err = $phone_err = $avenue_err = $street_err = $email_err = $role_err = $o
                     $email = $row["email"];
                     $occupancy = $row["occupancy"];
                     $no_rooms = $row["no_rooms"];
+                    $document = $row["document"];
                     $addinfo = $row["addinfo"];
                     //
                     $effective_date = $row["effective_date"];
@@ -212,6 +214,14 @@ if(isset($_POST["id"]) && !empty($_POST["id"]))
         $occupancy = $input_occupancy;
     }
     
+     // Validate Documentation Status
+   $input_document = trim($_POST["document"]);
+    if(empty($input_document)){
+        $document_err = "Please Specify Documentation Status.";     
+    } else{
+        $document = $input_document;
+    }
+    
      // Validate No of Rooms
    $input_no_rooms = trim($_POST["no_rooms"]);
     if(empty($input_no_rooms)){
@@ -283,11 +293,11 @@ if(isset($_POST["id"]) && !empty($_POST["id"]))
            //exit();
     
         // Prepare an update statement
-        $sql = "UPDATE users SET mobile_no=?, name_value=?,location=?,plot_no=?, avenue=?,street=?, email=?, occupancy=?, no_rooms=?, role=?, effective_date=?, sec_contr_dec21=?, infr_contr_dec21=?, sec_outst_dec21=?,  addinfo=? WHERE id=?";
+        $sql = "UPDATE users SET mobile_no=?, name_value=?,location=?,plot_no=?, avenue=?,street=?, email=?, occupancy=?, no_rooms=?, role=?, effective_date=?, sec_contr_dec21=?, infr_contr_dec21=?, sec_outst_dec21=?, document=?, addinfo=? WHERE id=?";
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ssssssssissssssi", $param_mobile_no, $param_name,$param_location, $param_plot_no, $param_avenue, $param_street,$param_email, $param_occupancy, $param_no_rooms, $param_role, $param_effective_date, $param_sec_contr_dec21,$param_infr_contr_dec21, $param_sec_outst_dec21, $param_addinfo, $param_id);
+            mysqli_stmt_bind_param($stmt, "ssssssssisssssssi", $param_mobile_no, $param_name,$param_location, $param_plot_no, $param_avenue, $param_street,$param_email, $param_occupancy, $param_no_rooms, $param_role, $param_effective_date, $param_sec_contr_dec21,$param_infr_contr_dec21, $param_sec_outst_dec21, $param_document,$param_addinfo, $param_id);
             
             // Set parameters
             $param_mobile_no = $mobile_no;
@@ -304,6 +314,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"]))
             $param_sec_contr_dec21 = $sec_contr_dec21;
             $param_infr_contr_dec21 = $infr_contr_dec21;
             $param_sec_outst_dec21 = $sec_outst_dec21;
+            $param_document = $document;
             
             $param_addinfo= $addinfo;
             $param_id = $id;
@@ -470,6 +481,18 @@ if(isset($_POST["id"]) && !empty($_POST["id"]))
                         <input class="form-control" type="text" name="sec_outst_dec21" value="<?php echo $sec_outst_dec21; ?>" placeholder="Total Security Outstanding as at December 2021" required>
                         <div class="valid-feedback">Valid.</div>
                        <div class="invalid-feedback">Please Enter the Amount Correctly.</div>
+                        </div>
+                        
+                        <!-- Documentation Status : intended to capture those who had submitted their Files and filter them out for printing -->
+                        <div class="mb-3 row">  
+                            <label for="document" class="form-label"><b>Documented?</b></label> 
+                             <select name="document"  class="form-select" >
+                             <option selected = "<?php echo $document; ?>" > <?php echo $document; ?> </option>
+                             <option value="YES">YES</option>
+                             <option value="NO">NO</option>
+                             </select>
+                             <div class="valid-feedback">Valid.</div>
+                             <div class="invalid-feedback">Please Enter Documentation Status.</div>
                         </div>
                     
                                                  
